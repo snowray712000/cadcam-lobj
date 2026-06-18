@@ -1,0 +1,21 @@
+{
+  "name": "cadcam-lobj",
+  "version": "1.0.0",
+  "description": "- 一個載入 .lobj (自訂的 labeled obj file) 相關的 package\r - 將會有 github 中，有 demo 的 html",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite demo",
+    "build": "vite build demo",
+    "preview": "vite preview demo"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^8.0.16"
+  },
+  "dependencies": {
+    "three": "^0.184.0"
+  }
+}
