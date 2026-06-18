@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>.lobj 格式設計文件</title>
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --border:   #30363d;
+      --text:     #c9d1d9;
+      --muted:    #8b949e;
+      --accent:   #58a6ff;
+      --green:    #3fb950;
+      --yellow:   #d29922;
+      --red:      #f85149;
+      --code-bg:  #1f2937;
+      --tag-bg:   #1c2d3f;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── Layout ── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── Header ── */
+    .doc-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 48px;
+    }
+    .doc-header h1 {
+      font-size: 2rem;
+      color: #fff;
+      letter-spacing: -.5px;
+    }
+    .doc-header .subtitle {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 14px;
+    }
+    .tag {
+      display: inline-block;
+      background: var(--tag-bg);
+      color: var(--accent);
+      border: 1px solid #1f4068;
+      border-radius: 20px;
+      font-size: 12px;
+      padding: 2px 10px;
+      margin-right: 6px;
+    }
+
+    /* ── Sections ── */
+    section { margin-bottom: 52px; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    p { margin-bottom: 12px; color: var(--text); }
+
+    /* ── Problem table ── */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .problem-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .problem-card .fmt {
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 1rem;
+      color: var(--yellow);
+      margin-bottom: 8px;
+    }
+    .problem-card p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* ── Goals ── */
+    .goal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .goal-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .goal-icon {
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .goal-list strong { color: #fff; display: block; margin-bottom: 2px; }
+    .goal-list span   { font-size: 13px; color: var(--muted); }
+
+    /* ── Design sub-sections ── */
+    .design-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 22px;
+      margin-bottom: 14px;
+    }
+    .design-block h3 {
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .design-block p, .design-block li { font-size: 14px; }
+    .design-block ul {
+      padding-left: 18px;
+      color: var(--muted);
+    }
+    .design-block li { margin-bottom: 4px; }
+
+    /* ── Code ── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    code { font-family: inherit; }
+    .kw  { color: #ff7b72; }   /* keyword  */
+    .cm  { color: #6e7681; }   /* comment  */
+    .st  { color: #a5d6ff; }   /* string   */
+    .nm  { color: #79c0ff; }   /* name/var */
+    .nb  { color: #d2a8ff; }   /* builtin  */
+    .op  { color: #ffa657; }   /* operator */
+
+    /* ── File structure ── */
+    .struct-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .struct-panel {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .struct-panel .panel-title {
+      background: #2d333b;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .struct-panel pre {
+      border: none;
+      border-radius: 0;
+      margin: 0;
+      font-size: 12.5px;
+    }
+    .field-req  { color: var(--green); }
+    .field-opt  { color: var(--muted); }
+    .field-type { color: #d2a8ff; }
+
+    /* ── Note callout ── */
+    .callout {
+      display: flex;
+      gap: 12px;
+      background: #1c2d1c;
+      border: 1px solid #2ea04326;
+      border-left: 3px solid var(--green);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-size: 13.5px;
+      color: #adbcad;
+    }
+    .callout-icon { flex-shrink: 0; font-size: 16px; }
+
+    /* ── Result ── */
+    .insight {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 22px;
+    }
+    .insight p { margin-bottom: 8px; font-size: 14px; }
+    .insight p:last-child { margin-bottom: 0; }
+    .insight strong { color: #fff; }
+
+    /* ── Code examples ── */
+    .lang-tabs {
+      display: flex;
+      gap: 2px;
+      margin-bottom: -1px;
+    }
+    .lang-tab {
+      padding: 6px 16px;
+      font-size: 13px;
+      border-radius: 6px 6px 0 0;
+      background: var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      user-select: none;
+    }
+    .lang-tab.active {
+      background: var(--code-bg);
+      color: var(--accent);
+      border-color: var(--border);
+    }
+    .code-panel { display: none; }
+    .code-panel.active { display: block; }
+    .code-panel pre { border-radius: 0 8px 8px 8px; }
+
+    @media (max-width: 600px) {
+      .problem-grid  { grid-template-columns: 1fr; }
+      .struct-wrap   { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <h1>.lobj 格式設計文件</h1>
+    <div class="subtitle" style="margin-top:10px">
+      <span class="tag">Binary</span>
+      <span class="tag">Triangle Mesh</span>
+      <span class="tag">Vertex Labels</span>
+    </div>
+  </div>
+
+  <!-- 前言 -->
+  <section>
+    <div class="section-label">前言</div>
+    <h2>為什麼需要 .lobj？</h2>
+    <p>
+      AI 應用中，3D 網格模型的<strong style="color:#fff">語意標註</strong>越來越重要——
+      牙齒分割、器官辨識、場景理解，都需要在網格的每個頂點上記錄分類標籤（label）。
+      然而現有主流格式都沒有為此設計，於是有了 .lobj。
+    </p>
+  </section>
+
+  <!-- 問題 -->
+  <section>
+    <div class="section-label">問題</div>
+    <h2>現有格式的缺口</h2>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="fmt">.stl</div>
+        <p>結構最簡單，但頂點大量重複，無法與標籤一一對應。</p>
+      </div>
+      <div class="problem-card">
+        <div class="fmt">.obj</div>
+        <p>有獨立頂點清單，結構良好，但無標籤欄位。</p>
+      </div>
+      <div class="problem-card">
+        <div class="fmt">.ply</div>
+        <p>可自訂屬性，但定義繁瑣，互通性差。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 目標 -->
+  <section>
+    <div class="section-label">目標</div>
+    <h2>設計要求</h2>
+    <ul class="goal-list">
+      <li>
+        <span class="goal-icon">🏷️</span>
+        <div>
+          <strong>可標記性</strong>
+          <span>每個頂點（vertex）攜帶一個整數標籤，支援最多 127 種類別。</span>
+        </div>
+      </li>
+      <li>
+        <span class="goal-icon">△</span>
+        <div>
+          <strong>支援 Triangle Mesh</strong>
+          <span>以三角面片為基礎，而非點雲——保留完整的拓撲資訊。</span>
+        </div>
+      </li>
+      <li>
+        <span class="goal-icon">⚡</span>
+        <div>
+          <strong>高效率</strong>
+          <span>二進制格式，非 ASCII。讀寫速度快，檔案體積小。</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 設計方法 -->
+  <section>
+    <div class="section-label">設計方法</div>
+    <h2>如何設計</h2>
+
+    <div class="design-block">
+      <h3>為何選 .obj 作為基礎？</h3>
+      <p style="margin-bottom:12px">
+        .obj 天生將頂點與面分開儲存，只需附加一個等長的標籤陣列，
+        即可對應每個頂點的語意，無需改動面的結構。
+      </p>
+      <pre><code><span class="cm"># 原始 .obj 結構</span>
+v  x  y  z       <span class="cm">← 頂點清單</span>
+f  i  j  k       <span class="cm">← 面清單（引用頂點索引）</span>
+
+<span class="cm"># .lobj 只需多一份</span>
+label  n         <span class="cm">← 標籤清單（與頂點一一對應）</span></code></pre>
+    </div>
+
+    <div class="design-block">
+      <h3>為何用二進制？</h3>
+      <ul>
+        <li>解析速度快：可直接做記憶體映射，無需逐字元解析</li>
+        <li>體積小：float32 (4 bytes) 遠比 ASCII 數字字串緊湊</li>
+      </ul>
+    </div>
+
+    <div class="design-block">
+      <h3>標籤型別：<code style="color:var(--yellow)">int8</code></h3>
+      <ul>
+        <li>標籤數量通常 127 以內，int8 已足夠</li>
+        <li>選用<strong style="color:#fff">有號數</strong>而非 uint8，保留 <code style="color:var(--red)">-1</code> 作為「未標記（unlabeled）」的慣例值</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 檔案結構 -->
+  <section>
+    <div class="section-label">規格</div>
+    <h2>二進制檔案結構</h2>
+
+    <div class="struct-wrap">
+      <div class="struct-panel">
+        <div class="panel-title">HEADER &nbsp;·&nbsp; 28 bytes（7 × int32）</div>
+        <pre><code><span class="field-req">counts[0]</span>  <span class="field-type">int32</span>  頂點數 cntv  <span class="cm">必要</span>
+<span class="field-opt">counts[1]</span>  <span class="field-type">int32</span>  法向量數     <span class="cm">0 或 cntv</span>
+<span class="field-opt">counts[2]</span>  <span class="field-type">int32</span>  顏色數       <span class="cm">0 或 cntv</span>
+<span class="field-opt">counts[3]</span>  <span class="field-type">int32</span>  標籤數       <span class="cm">0 或 cntv</span>
+<span class="field-opt">counts[4]</span>  <span class="field-type">int32</span>  紋理座標數   <span class="cm">0 或 M</span>
+<span class="field-req">counts[5]</span>  <span class="field-type">int32</span>  三角形數 cntt <span class="cm">必要</span>
+<span class="field-opt">counts[6]</span>  <span class="field-type">int32</span>  紋理ID數     <span class="cm">0 或 cntt</span></code></pre>
+      </div>
+      <div class="struct-panel">
+        <div class="panel-title">DATA CHUNKS &nbsp;·&nbsp; 依 header 順序緊接</div>
+        <pre><code><span class="field-req">vertices</span>   <span class="field-type">float32</span>  cntv × 3  <span class="cm">必要</span>
+<span class="field-opt">normals</span>    <span class="field-type">float32</span>  若 > 0
+<span class="field-opt">colors</span>     <span class="field-type">float32</span>  若 > 0
+<span class="field-opt">labels</span>     <span class="field-type">int8</span>     若 > 0
+<span class="field-opt">tex2d</span>      <span class="field-type">float32</span>  若 > 0
+<span class="field-req">triangles</span>  <span class="field-type">uint32</span>   cntt × 3  <span class="cm">必要</span>
+<span class="field-opt">texId</span>      <span class="field-type">uint32</span>   若 > 0</code></pre>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">💡</span>
+      <span>
+        實務上，<strong style="color:#c9d1d9">vertices、triangles、labels</strong>
+        是絕大多數場景唯一用到的三個欄位，其餘均為選填。
+      </span>
+    </div>
+  </section>
+
+  <!-- 結果 -->
+  <section>
+    <div class="section-label">結果與反思</div>
+    <h2>設計回顧</h2>
+    <div class="insight">
+      <p>
+        .lobj 最初設計時，以盡量相容原始 .obj 為目標，
+        因此保留了法向量、顏色、紋理座標等多個選填欄位。
+      </p>
+      <p>
+        實際使用後發現：<strong>絕大多數場景只需要 vertices、triangles、labels</strong>，
+        其他欄位的使用率極低。
+      </p>
+      <p style="color:var(--muted)">
+        這反映了「通用性 vs. 精簡性」的設計取捨。
+        對於只需核心三欄位的使用者，忽略其他欄位即可，格式本身不強制填寫。
+      </p>
+    </div>
+  </section>
+
+  <!-- 使用範例 -->
+  <section>
+    <div class="section-label">使用範例</div>
+    <h2>程式碼</h2>
+
+    <div class="lang-tabs">
+      <div class="lang-tab active" onclick="switchTab('py')">Python</div>
+      <div class="lang-tab"       onclick="switchTab('js')">JavaScript</div>
+    </div>
+
+    <div id="tab-py" class="code-panel active">
+      <pre><code><span class="kw">from</span> <span class="nm">Easy</span> <span class="kw">import</span> <span class="nm">LabeledObject</span>
+
+<span class="cm"># 讀取</span>
+<span class="nm">lobj</span>      = <span class="nm">LabeledObject</span>().<span class="nb">read</span>(<span class="st">'model.lobj'</span>)
+<span class="nm">vertices</span>  = <span class="nm">lobj</span>[<span class="op">0</span>]  <span class="cm"># ndarray (N, 3)  float32</span>
+<span class="nm">triangles</span> = <span class="nm">lobj</span>[<span class="op">5</span>]  <span class="cm"># ndarray (M, 3)  int32</span>
+<span class="nm">labels</span>    = <span class="nm">lobj</span>[<span class="op">3</span>]  <span class="cm"># ndarray (N,)    int8  or None</span>
+
+<span class="cm"># 儲存（僅 vertices / labels / triangles）</span>
+<span class="nm">LabeledObject</span>().<span class="nb">saveVsLsTris</span>(<span class="st">'out.lobj'</span>, <span class="nm">vertices</span>, <span class="nm">labels</span>, <span class="nm">triangles</span>)</code></pre>
+    </div>
+
+    <div id="tab-js" class="code-panel">
+      <pre><code><span class="kw">import</span> { <span class="nm">parseLobjBinary</span>, <span class="nm">isBinaryLobj</span> } <span class="kw">from</span> <span class="st">'cadcam-lobj'</span>;
+
+<span class="kw">const</span> <span class="nm">buf</span> = <span class="kw">await</span> <span class="nm">file</span>.<span class="nb">arrayBuffer</span>();
+
+<span class="kw">if</span> (<span class="nm">isBinaryLobj</span>(<span class="nm">buf</span>)) {
+  <span class="kw">const</span> { <span class="nm">vertices</span>, <span class="nm">triangles</span>, <span class="nm">labels</span> } = <span class="nm">parseLobjBinary</span>(<span class="nm">buf</span>);
+  <span class="cm">// vertices   Float32Array  length = N × 3</span>
+  <span class="cm">// triangles  Uint32Array   length = M × 3</span>
+  <span class="cm">// labels     Int8Array     length = N  (or null)</span>
+}</code></pre>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  function switchTab(lang) {
+    document.querySelectorAll('.lang-tab').forEach((t, i) => {
+      t.classList.toggle('active', ['py','js'][i] === lang);
+    });
+    document.querySelectorAll('.code-panel').forEach(p => {
+      p.classList.toggle('active', p.id === 'tab-' + lang);
+    });
+  }
+</script>
+</body>
+</html>
