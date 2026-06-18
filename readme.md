@@ -7,3 +7,5 @@
 
 - html
   - 基於 three.js, html, css, js, es module, vite
+- lobj
+  - 將 .py 的 src 給 ai，產生對應的 .js
