@@ -1,21 +1,35 @@
 {
-  "name": "cadcam-lobj",
-  "version": "1.0.0",
+  "name": "@cadcam/lobj",
+  "version": "0.8.1",
   "description": "- 一個載入 .lobj (自訂的 labeled obj file) 相關的 package\r - 將會有 github 中，有 demo 的 html",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
+  "keywords": [
+    "mesh",
+    "label"
+  ],
   "scripts": {
     "dev": "vite demo",
-    "build": "vite build demo",
+    "build": "vite build demo --outDir ./../dist --emptyOutDir",
+    "build:lib": "rmdir /s /q dist && vite build --config ./vite.config.lib.js && copy src\\index.d.ts dist\\index.d.ts",
     "preview": "vite preview demo"
   },
-  "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0-or-later",
   "devDependencies": {
     "vite": "^8.0.16"
   },
   "dependencies": {
     "three": "^0.184.0"
-  }
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ]
 }
