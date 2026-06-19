@@ -175,51 +175,50 @@ label  n         <span class="cm">← 標籤清單（與頂點一一對應）</s
   <!-- 使用範例 -->
   <section>
     <div class="section-label">使用範例</div>
-    <h2>程式碼</h2>
+    <h2>程式碼（JavaScript）</h2>
 
-    <div class="lang-tabs">
-      <div class="lang-tab active" onclick="switchTab('py')">Python</div>
-      <div class="lang-tab"       onclick="switchTab('js')">JavaScript</div>
-    </div>
+    <pre><code><span class="kw">import</span> { <span class="nm">isValidLobj</span>, <span class="nm">parseLobjBinary</span> } <span class="kw">from</span> <span class="st">'@cadcam/lobj'</span>;
 
-    <div id="tab-py" class="code-panel active">
-      <pre><code><span class="kw">from</span> <span class="nm">Easy</span> <span class="kw">import</span> <span class="nm">LabeledObject</span>
+<span class="cm">// 從 File 物件載入（例如 input[type=file] 或 drag-drop）</span>
+<span class="kw">async function</span> <span class="nb">loadFile</span>(<span class="nm">file</span>) {
+    <span class="kw">try</span> {
+        <span class="kw">const</span> <span class="nm">buf</span> = <span class="kw">await</span> <span class="nm">file</span>.<span class="nb">arrayBuffer</span>();
+        <span class="kw">if</span> (<span class="nm">isValidLobj</span>(<span class="nm">buf</span>)) {
+            <span class="kw">const</span> <span class="nm">lobjdata</span> = <span class="nm">parseLobjBinary</span>(<span class="nm">buf</span>);
+        }
+    } <span class="kw">catch</span> (<span class="nm">e</span>) {
+        <span class="nb">alert</span>(<span class="st">'解析失敗: '</span> + <span class="nm">e</span>.<span class="nb">message</span>);
+    }
+}
 
-<span class="cm"># 讀取</span>
-<span class="nm">lobj</span>      = <span class="nm">LabeledObject</span>().<span class="nb">read</span>(<span class="st">'model.lobj'</span>)
-<span class="nm">vertices</span>  = <span class="nm">lobj</span>[<span class="op">0</span>]  <span class="cm"># ndarray (N, 3)  float32</span>
-<span class="nm">triangles</span> = <span class="nm">lobj</span>[<span class="op">5</span>]  <span class="cm"># ndarray (M, 3)  int32</span>
-<span class="nm">labels</span>    = <span class="nm">lobj</span>[<span class="op">3</span>]  <span class="cm"># ndarray (N,)    int8  or None</span>
+<span class="cm">// 拖曳 drag-drop 方式</span>
+<span class="kw">function</span> <span class="nb">add_event_drop_lobj</span>(<span class="nm">container</span>) {
+    <span class="nm">container</span>.<span class="nb">addEventListener</span>(<span class="st">'dragover'</span>, <span class="nm">e</span> =&gt; <span class="nm">e</span>.<span class="nb">preventDefault</span>());
+    <span class="nm">container</span>.<span class="nb">addEventListener</span>(<span class="st">'drop'</span>, <span class="nm">e</span> =&gt; {
+        <span class="nm">e</span>.<span class="nb">preventDefault</span>();
+        <span class="kw">const</span> <span class="nm">file</span> = <span class="nm">e</span>.<span class="nb">dataTransfer</span>.<span class="nb">files</span>[<span class="op">0</span>];
+        <span class="kw">if</span> (<span class="nm">file</span>) <span class="nb">loadFile</span>(<span class="nm">file</span>);
+    });
+}
 
-<span class="cm"># 儲存（僅 vertices / labels / triangles）</span>
-<span class="nm">LabeledObject</span>().<span class="nb">saveVsLsTris</span>(<span class="st">'out.lobj'</span>, <span class="nm">vertices</span>, <span class="nm">labels</span>, <span class="nm">triangles</span>)</code></pre>
-    </div>
+<span class="cm">// input[type=file] 方式</span>
+<span class="nm">document</span>.<span class="nb">getElementById</span>(<span class="st">'fileInput'</span>).<span class="nb">addEventListener</span>(<span class="st">'change'</span>, <span class="nm">e</span> =&gt; {
+    <span class="kw">const</span> <span class="nm">file</span> = <span class="nm">e</span>.<span class="nb">target</span>.<span class="nb">files</span>[<span class="op">0</span>];
+    <span class="kw">if</span> (<span class="nm">file</span>) <span class="nb">loadFile</span>(<span class="nm">file</span>);
+});
 
-    <div id="tab-js" class="code-panel">
-      <pre><code><span class="kw">import</span> { <span class="nm">parseLobjBinary</span>, <span class="nm">isBinaryLobj</span> } <span class="kw">from</span> <span class="st">'cadcam-lobj'</span>;
-
-<span class="kw">const</span> <span class="nm">buf</span> = <span class="kw">await</span> <span class="nm">file</span>.<span class="nb">arrayBuffer</span>();
-
-<span class="kw">if</span> (<span class="nm">isBinaryLobj</span>(<span class="nm">buf</span>)) {
-  <span class="kw">const</span> { <span class="nm">vertices</span>, <span class="nm">triangles</span>, <span class="nm">labels</span> } = <span class="nm">parseLobjBinary</span>(<span class="nm">buf</span>);
-  <span class="cm">// vertices   Float32Array  length = N × 3</span>
-  <span class="cm">// triangles  Uint32Array   length = M × 3</span>
-  <span class="cm">// labels     Int8Array     length = N  (or null)</span>
+<span class="cm">// 從伺服器 fetch 載入</span>
+<span class="kw">async function</span> <span class="nb">fetch_from_url</span>(<span class="nm">url</span>) {
+    <span class="kw">const</span> <span class="nm">resp</span> = <span class="kw">await</span> <span class="nb">fetch</span>(<span class="nm">url</span>);
+    <span class="kw">if</span> (!<span class="nm">resp</span>.<span class="nb">ok</span>) <span class="kw">throw new</span> <span class="nm">Error</span>(<span class="st">`Failed to load <span class="nm">${url}</span>: <span class="nm">${resp.status}</span>`</span>);
+    <span class="kw">const</span> <span class="nm">buf</span> = <span class="kw">await</span> <span class="nm">resp</span>.<span class="nb">arrayBuffer</span>();
+    <span class="kw">if</span> (<span class="nm">isValidLobj</span>(<span class="nm">buf</span>)) <span class="kw">return</span> <span class="nm">parseLobjBinary</span>(<span class="nm">buf</span>);
+    <span class="kw">throw new</span> <span class="nm">Error</span>(<span class="st">`Invalid .lobj file: <span class="nm">${url}</span>`</span>);
 }</code></pre>
-    </div>
   </section>
 
 </div>
 
-<script>
-  function switchTab(lang) {
-    document.querySelectorAll('.lang-tab').forEach((t, i) => {
-      t.classList.toggle('active', ['py','js'][i] === lang);
-    });
-    document.querySelectorAll('.code-panel').forEach(p => {
-      p.classList.toggle('active', p.id === 'tab-' + lang);
-    });
-  }
-</script>
+
 </body>
 </html>

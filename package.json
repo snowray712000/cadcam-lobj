@@ -1,6 +1,6 @@
 {
   "name": "@cadcam/lobj",
-  "version": "0.12.1",
+  "version": "1.0.1",
   "description": "- 一個載入 .lobj (自訂的 labeled obj file) 相關的 package\r - 將會有 github 中，有 demo 的 html",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
