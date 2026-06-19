@@ -8,6 +8,11 @@
   - [lobj-design.md](doc/lobj-design.md)
 - 準備 index.d.ts 與 JsDoc 相關的 type
 
+### 上傳到 github 轉 page 時
+
+- import error
+  - 要加 importmap 在 index.html 中
+
 ### publish
 
 - npm run build:lib
