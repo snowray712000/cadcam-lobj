@@ -2,8 +2,8 @@
 
 - 一個載入 .lobj (自訂的 labeled obj file) 相關的 package
 - 將會有 github 中，有 demo 的 html
-- [.lobj design html(github only)](./doc/lobj-design.html) 會有 lobj 的設計說明
-- [.demo html (github only)](./demo/index.html) 會有 demo 的說明
+- [.lobj design html](https://snowray712000.github.io/cadcam-lobj/doc/lobj-design.html) 會有 lobj 的設計說明
+- [.demo html](https://snowray712000.github.io/cadcam-lobj/demo/index.html) 會有 demo 的說明
 
 ### usage
 
