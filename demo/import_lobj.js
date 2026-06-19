@@ -8,7 +8,7 @@ async function loadFile(file) {
         const buf = await file.arrayBuffer();
         if (isValidLobj(buf)) {
             const lobjdata = parseLobjBinary(buf);
-            
+
             // trigger document lobj-imported event
             const event = new CustomEvent('lobj-imported', { detail: {lobj: lobjdata} });
             document.dispatchEvent(event);
@@ -33,4 +33,14 @@ export function add_input_type_change(input) {
         const file = e.target.files[0];
         if (file) loadFile(file);
     });
+}
+
+// sample ... fetch from url
+async function fetch_from_url(url) {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`Failed to load ${url}: ${resp.status}`);
+    const buf = await resp.arrayBuffer();
+    if (isValidLobj(buf)) return parseLobjBinary(buf);
+
+    throw new Error(`Invalid .lobj file: ${url}`);
 }

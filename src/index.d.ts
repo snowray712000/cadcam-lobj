@@ -10,7 +10,3 @@ export interface LobjData {
 
 export declare function parseLobjBinary(buffer: ArrayBuffer): LobjData;
 export declare function isValidLobj(buffer: ArrayBuffer): boolean;
-export declare class LobjLoader {
-  load(url: string): Promise<LobjData>;
-}
-

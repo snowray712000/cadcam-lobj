@@ -53,8 +53,8 @@ h2 {
     background: #0f3460;
     cursor: pointer;
     font-size: 13px;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
 }
 
 .group-item:hover {
